@@ -1,3 +1,4 @@
+import logging
 from datetime import date, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,6 +7,8 @@ from sqlalchemy.orm import selectinload
 from app.models import Airport, Flight
 from app.schemas import FlightResponse
 from app.services.price_engine import compute_price
+
+logger = logging.getLogger(__name__)
 
 
 def _flight_to_response(flight: Flight, seat_class: str) -> FlightResponse:
@@ -48,8 +51,23 @@ async def search_flights(
     airlines: list[str] | None = None,
     sort_by: str = "price",
 ) -> list[FlightResponse]:
-    origin_alias = Airport.__table__.alias("origin_ap")
-    dest_alias = Airport.__table__.alias("dest_ap")
+    # Look up origin and destination airports by IATA code first, then
+    # filter flights by their IDs.  This avoids table-alias joins that
+    # can silently return no results with SQLite + aiosqlite.
+    origin_result = await db.execute(
+        select(Airport).where(Airport.iata_code == origin.upper())
+    )
+    origin_airport = origin_result.scalars().first()
+
+    dest_result = await db.execute(
+        select(Airport).where(Airport.iata_code == destination.upper())
+    )
+    dest_airport = dest_result.scalars().first()
+
+    if not origin_airport or not dest_airport:
+        logger.warning("Airport not found: origin=%s dest=%s", origin, destination)
+        return []
+
     day_start = datetime(departure_date.year, departure_date.month, departure_date.day, 0, 0, 0)
 
     stmt = (
@@ -59,10 +77,8 @@ async def search_flights(
             selectinload(Flight.origin),
             selectinload(Flight.destination),
         )
-        .join(origin_alias, Flight.origin_id == origin_alias.c.id)
-        .join(dest_alias, Flight.destination_id == dest_alias.c.id)
-        .where(origin_alias.c.iata_code == origin.upper())
-        .where(dest_alias.c.iata_code == destination.upper())
+        .where(Flight.origin_id == origin_airport.id)
+        .where(Flight.destination_id == dest_airport.id)
         .where(Flight.departure_time >= day_start)
         .where(Flight.departure_time < day_start + timedelta(days=1))
     )
@@ -72,6 +88,7 @@ async def search_flights(
 
     result = await db.execute(stmt)
     flights = result.scalars().all()
+    logger.debug("search_flights %s->%s %s: %d results", origin, destination, departure_date, len(flights))
 
     responses = [_flight_to_response(f, seat_class) for f in flights]
 
