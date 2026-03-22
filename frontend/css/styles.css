@@ -280,6 +280,7 @@ body {
 }
 
 .autocomplete-info { display: flex; flex-direction: column; }
+.autocomplete-sep { color: var(--gray-400); font-size: 0.85rem; margin: 0 0.25rem; }
 .autocomplete-city { font-size: 0.9rem; font-weight: 500; color: var(--gray-800); }
 .autocomplete-name { font-size: 0.75rem; color: var(--gray-500); }
 

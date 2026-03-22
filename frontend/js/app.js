@@ -106,9 +106,10 @@ function buildAutocomplete(inputId, dropdownId, onSelect) {
       div.className = 'autocomplete-item';
       div.innerHTML = `
         <span class="autocomplete-code">${ap.iata_code}</span>
+        <span class="autocomplete-sep">—</span>
         <span class="autocomplete-info">
           <span class="autocomplete-city">${ap.city}</span>
-          <span class="autocomplete-name">${ap.name}</span>
+          <span class="autocomplete-name">(${ap.name})</span>
         </span>`;
       div.addEventListener('mouseenter', () => { highlightIndex = i; renderHighlight(); });
       div.addEventListener('click', () => selectItem(ap));
