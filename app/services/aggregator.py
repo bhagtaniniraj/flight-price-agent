@@ -1,7 +1,7 @@
 """Flight offer aggregator that queries multiple providers in parallel."""
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 import statistics
 
@@ -68,7 +68,7 @@ class FlightAggregator:
             cheapest_price=cheapest,
             total_results=len(marked),
             providers_queried=queried,
-            search_timestamp=datetime.utcnow(),
+            search_timestamp=datetime.now(timezone.utc),
         )
 
     def _deduplicate(self, offers: list[FlightOffer]) -> list[FlightOffer]:

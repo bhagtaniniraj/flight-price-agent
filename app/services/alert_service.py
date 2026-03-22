@@ -1,6 +1,6 @@
 """Price alert management service."""
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from app.schemas.alert import AlertCreate, AlertResponse, AlertUpdate
@@ -26,7 +26,7 @@ class AlertService:
             currency=data.currency.upper(),
             email=data.email,
             is_active=True,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             triggered_at=None,
         )
         self._alerts[alert_id] = alert
@@ -72,7 +72,7 @@ class AlertService:
                 and alert.currency == currency.upper()
                 and current_price <= alert.target_price
             ):
-                alert_copy = alert.model_copy(update={"triggered_at": datetime.utcnow()})
+                alert_copy = alert.model_copy(update={"triggered_at": datetime.now(timezone.utc)})
                 self._alerts[alert.id] = alert_copy
                 triggered.append(alert_copy)
                 logger.info("Alert %s triggered! Price %.2f <= target %.2f", alert.id, current_price, alert.target_price)

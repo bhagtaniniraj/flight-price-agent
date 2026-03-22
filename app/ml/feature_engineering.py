@@ -1,6 +1,6 @@
 """Feature engineering for flight price prediction."""
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -41,7 +41,7 @@ class FeatureEngineer:
         try:
             dep_date = datetime.strptime(request.departure_date, "%Y-%m-%d")
         except ValueError:
-            dep_date = datetime.utcnow()
+            dep_date = datetime.now(timezone.utc)
 
         route_pair = (request.origin.upper(), request.destination.upper())
         is_popular = 1.0 if route_pair in POPULAR_ROUTES else 0.0

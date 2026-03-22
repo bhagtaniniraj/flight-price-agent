@@ -1,5 +1,5 @@
 """SQLAlchemy ORM models for the flight price agent."""
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,7 +15,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     alerts: Mapped[list["Alert"]] = relationship("Alert", back_populates="user", cascade="all, delete-orphan")
@@ -38,7 +38,7 @@ class Flight(Base):
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
     total_duration: Mapped[str | None] = mapped_column(String(50), nullable=True)
     deep_link: Mapped[str | None] = mapped_column(Text, nullable=True)
-    fetched_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     price_history: Mapped[list["PriceHistory"]] = relationship("PriceHistory", back_populates="flight")
 
@@ -52,7 +52,7 @@ class PriceHistory(Base):
     flight_id: Mapped[int] = mapped_column(Integer, ForeignKey("flights.id"), nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
-    recorded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     flight: Mapped["Flight"] = relationship("Flight", back_populates="price_history")
 
@@ -70,7 +70,7 @@ class Alert(Base):
     target_price: Mapped[float] = mapped_column(Float, nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    triggered_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    triggered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     user: Mapped["User | None"] = relationship("User", back_populates="alerts")

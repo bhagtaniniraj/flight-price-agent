@@ -1,6 +1,6 @@
 """Kiwi/Tequila flight search service."""
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 import httpx
 from app.config import Settings
 from app.schemas.flight import FlightOffer, FlightSearchRequest, FlightSegment
@@ -55,8 +55,8 @@ class KiwiService:
                 for route in item.get("route", []):
                     dep_ts = route.get("dTimeUTC", 0)
                     arr_ts = route.get("aTimeUTC", 0)
-                    dep_time = datetime.utcfromtimestamp(dep_ts).isoformat() if dep_ts else ""
-                    arr_time = datetime.utcfromtimestamp(arr_ts).isoformat() if arr_ts else ""
+                    dep_time = datetime.fromtimestamp(dep_ts, tz=timezone.utc).isoformat() if dep_ts else ""
+                    arr_time = datetime.fromtimestamp(arr_ts, tz=timezone.utc).isoformat() if arr_ts else ""
                     segments.append(
                         FlightSegment(
                             departure_airport=route.get("flyFrom", ""),

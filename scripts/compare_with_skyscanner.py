@@ -11,7 +11,7 @@ import asyncio
 import csv
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -110,7 +110,7 @@ async def main() -> None:
     print(f"{'='*50}\n")
 
     row = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "origin": args.origin,
         "destination": args.destination,
         "date": args.date,
