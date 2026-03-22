@@ -1,5 +1,5 @@
-from datetime import date
-from sqlalchemy import func, select
+from datetime import date, datetime, timedelta
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -50,6 +50,7 @@ async def search_flights(
 ) -> list[FlightResponse]:
     origin_alias = Airport.__table__.alias("origin_ap")
     dest_alias = Airport.__table__.alias("dest_ap")
+    day_start = datetime(departure_date.year, departure_date.month, departure_date.day, 0, 0, 0)
 
     stmt = (
         select(Flight)
@@ -62,7 +63,8 @@ async def search_flights(
         .join(dest_alias, Flight.destination_id == dest_alias.c.id)
         .where(origin_alias.c.iata_code == origin.upper())
         .where(dest_alias.c.iata_code == destination.upper())
-        .where(func.date(Flight.departure_time) == departure_date.isoformat())
+        .where(Flight.departure_time >= day_start)
+        .where(Flight.departure_time < day_start + timedelta(days=1))
     )
 
     if max_stops is not None:
