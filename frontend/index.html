@@ -3,267 +3,372 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FlightAI – Smart Flight Price Agent</title>
+  <title>SkySearch — Flight Search</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/frontend/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
-
-<!-- ── Navbar ─────────────────────────────────────────────────────────── -->
-<nav class="navbar">
-  <div class="container">
-    <div class="nav-brand">
-      <span class="plane-icon">✈️</span>
-      <span>FlightAI</span>
+  <!-- Header / Nav -->
+  <header class="header">
+    <div class="header-inner container">
+      <div class="logo">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">SkySearch</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="search">Search Flights</button>
+        <button class="nav-btn" data-tab="bookings">My Bookings</button>
+        <button class="nav-btn" data-tab="alerts">Price Alerts</button>
+        <button class="nav-btn" data-tab="predictions">AI Predictions</button>
+      </nav>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-section="section-search">🔍 Search</button>
-      <button class="nav-tab" data-section="section-predict">🔮 Predict</button>
-      <button class="nav-tab" data-section="section-alerts">🔔 Alerts</button>
-    </div>
-    <div id="health-dot" class="health-dot" title="Checking API…"></div>
-  </div>
-</nav>
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 1 — FLIGHT SEARCH                                              -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<section id="section-search" class="section active">
+  </header>
 
   <!-- Hero -->
-  <div class="hero">
-    <div class="container">
-      <h1 class="hero-title">Find the Best Flight Deals</h1>
-      <p class="hero-subtitle">AI-powered search across Amadeus, Kiwi &amp; Duffel — all at once</p>
+  <div class="hero" id="hero">
+    <div class="hero-content container">
+      <h1 class="hero-title">Find Your Next Flight</h1>
+      <p class="hero-subtitle">Search thousands of routes, compare prices, and book instantly.</p>
+    </div>
+  </div>
 
-      <!-- Search card -->
-      <div class="search-card">
-        <form id="search-form">
-          <!-- Row 1: origin ⇄ destination -->
-          <div class="search-row">
-            <div class="field-group">
-              <label for="origin">From</label>
-              <input id="origin" type="text" maxlength="3" placeholder="e.g. JFK" autocomplete="off" required />
+  <main class="main container">
+
+    <!-- ===== SEARCH TAB ===== -->
+    <section id="tab-search" class="tab-panel active">
+      <!-- Search Form -->
+      <div class="search-card card">
+        <div class="search-form">
+          <div class="form-row">
+            <!-- Origin -->
+            <div class="form-group autocomplete-wrapper">
+              <label class="form-label">From</label>
+              <div class="autocomplete-input-wrap">
+                <span class="input-icon">🛫</span>
+                <input type="text" id="origin-input" class="form-input" placeholder="City or airport code" autocomplete="off" />
+              </div>
+              <div class="autocomplete-dropdown" id="origin-dropdown"></div>
             </div>
-            <button type="button" id="swap-btn" class="swap-btn" title="Swap airports">⇄</button>
-            <div class="field-group">
-              <label for="destination">To</label>
-              <input id="destination" type="text" maxlength="3" placeholder="e.g. LAX" autocomplete="off" required />
+
+            <!-- Swap button -->
+            <button class="swap-btn" id="swap-btn" title="Swap airports">⇄</button>
+
+            <!-- Destination -->
+            <div class="form-group autocomplete-wrapper">
+              <label class="form-label">To</label>
+              <div class="autocomplete-input-wrap">
+                <span class="input-icon">🛬</span>
+                <input type="text" id="destination-input" class="form-input" placeholder="City or airport code" autocomplete="off" />
+              </div>
+              <div class="autocomplete-dropdown" id="destination-dropdown"></div>
             </div>
           </div>
 
-          <!-- Row 2: dates, passengers, currency -->
-          <div class="search-row-2">
-            <div class="field-group">
-              <label for="departure-date">Departure</label>
-              <input id="departure-date" type="date" required />
+          <div class="form-row form-row-secondary">
+            <!-- Departure Date -->
+            <div class="form-group">
+              <label class="form-label">Departure Date</label>
+              <input type="date" id="departure-date" class="form-input" />
             </div>
-            <div class="field-group">
-              <label for="return-date">Return <span style="color:var(--gray-400)">(optional)</span></label>
-              <input id="return-date" type="date" />
-            </div>
-            <div class="field-group">
-              <label for="adults">Passengers</label>
-              <select id="adults">
+
+            <!-- Passengers -->
+            <div class="form-group form-group-sm">
+              <label class="form-label">Passengers</label>
+              <select id="passengers" class="form-input">
                 <option value="1">1 Adult</option>
                 <option value="2">2 Adults</option>
                 <option value="3">3 Adults</option>
                 <option value="4">4 Adults</option>
                 <option value="5">5 Adults</option>
                 <option value="6">6 Adults</option>
-                <option value="7">7 Adults</option>
-                <option value="8">8 Adults</option>
-                <option value="9">9 Adults</option>
               </select>
             </div>
-            <div class="field-group">
-              <label for="currency">Currency</label>
-              <select id="currency">
-                <option value="USD">🇺🇸 USD</option>
-                <option value="EUR">🇪🇺 EUR</option>
-                <option value="GBP">🇬🇧 GBP</option>
-                <option value="INR">🇮🇳 INR</option>
+
+            <!-- Seat Class -->
+            <div class="form-group form-group-sm">
+              <label class="form-label">Class</label>
+              <select id="seat-class" class="form-input">
+                <option value="economy">Economy</option>
+                <option value="premium_economy">Premium Economy</option>
+                <option value="business">Business</option>
+                <option value="first">First Class</option>
               </select>
+            </div>
+
+            <!-- Search Button -->
+            <div class="form-group form-group-btn">
+              <button id="search-btn" class="btn btn-primary btn-large">
+                <span class="btn-icon">🔍</span> Search Flights
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Area -->
+      <div id="results-area" class="results-area" style="display:none;">
+        <div class="results-layout">
+          <!-- Filter Sidebar -->
+          <aside class="filter-sidebar card">
+            <h3 class="filter-title">Filter Results</h3>
+
+            <div class="filter-section">
+              <label class="filter-label">Sort By</label>
+              <select id="sort-by" class="form-input form-input-sm">
+                <option value="price">Lowest Price</option>
+                <option value="duration">Shortest Duration</option>
+                <option value="departure">Earliest Departure</option>
+                <option value="stops">Fewest Stops</option>
+              </select>
+            </div>
+
+            <div class="filter-section">
+              <label class="filter-label">Max Stops</label>
+              <div class="stop-filters">
+                <label class="radio-label">
+                  <input type="radio" name="stops" value="" checked /> Any
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="stops" value="0" /> Nonstop
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="stops" value="1" /> Max 1 stop
+                </label>
+              </div>
+            </div>
+
+            <div class="filter-section">
+              <label class="filter-label">Max Price ($)</label>
+              <input type="number" id="max-price" class="form-input form-input-sm" placeholder="Any" min="0" step="10" />
+            </div>
+
+            <div class="filter-section">
+              <label class="filter-label">Airlines</label>
+              <div id="airline-filters" class="airline-filter-list"></div>
+            </div>
+
+            <button id="apply-filters-btn" class="btn btn-secondary btn-block">Apply Filters</button>
+          </aside>
+
+          <!-- Flight Results -->
+          <div class="results-main">
+            <div class="results-header">
+              <p id="results-count" class="results-count"></p>
+              <div id="deals-badge" class="deals-badge" style="display:none;">🔥 Deals Available!</div>
+            </div>
+            <div id="flight-list" class="flight-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading / Empty States -->
+      <div id="search-loading" class="state-box" style="display:none;">
+        <div class="spinner"></div>
+        <p>Searching flights...</p>
+      </div>
+      <div id="search-empty" class="state-box" style="display:none;">
+        <div class="state-icon">✈️</div>
+        <h3>No flights found</h3>
+        <p>Try different dates or airports.</p>
+      </div>
+      <div id="search-error" class="state-box" style="display:none;">
+        <div class="state-icon">⚠️</div>
+        <h3>Search error</h3>
+        <p id="search-error-msg"></p>
+      </div>
+    </section>
+
+    <!-- ===== BOOKINGS TAB ===== -->
+    <section id="tab-bookings" class="tab-panel">
+      <div class="card">
+        <h2 class="section-title">My Bookings</h2>
+        <div class="email-lookup">
+          <div class="email-input-row">
+            <input type="email" id="bookings-email" class="form-input" placeholder="Enter your email address" />
+            <button id="bookings-lookup-btn" class="btn btn-primary">Look Up Bookings</button>
+          </div>
+        </div>
+        <div id="bookings-loading" class="state-box" style="display:none;">
+          <div class="spinner"></div><p>Loading bookings...</p>
+        </div>
+        <div id="bookings-empty" class="state-box" style="display:none;">
+          <div class="state-icon">🎫</div>
+          <h3>No bookings found</h3>
+          <p>We couldn't find any bookings for that email.</p>
+        </div>
+        <div id="bookings-list" class="bookings-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== ALERTS TAB ===== -->
+    <section id="tab-alerts" class="tab-panel">
+      <div class="alerts-layout">
+        <!-- Create Alert Form -->
+        <div class="card">
+          <h2 class="section-title">Create Price Alert</h2>
+          <p class="section-desc">Get notified when prices drop below your target.</p>
+          <div class="alert-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">From (IATA)</label>
+                <input type="text" id="alert-origin" class="form-input" placeholder="e.g. JFK" maxlength="3" style="text-transform:uppercase" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">To (IATA)</label>
+                <input type="text" id="alert-destination" class="form-input" placeholder="e.g. LAX" maxlength="3" style="text-transform:uppercase" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Target Price ($)</label>
+                <input type="number" id="alert-price" class="form-input" placeholder="e.g. 300" min="1" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="alert-email" class="form-input" placeholder="your@email.com" />
+              </div>
+            </div>
+            <button id="create-alert-btn" class="btn btn-primary">Create Alert</button>
+            <div id="alert-success" class="alert-msg success" style="display:none;"></div>
+            <div id="alert-error" class="alert-msg error" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- My Alerts -->
+        <div class="card">
+          <h2 class="section-title">My Alerts</h2>
+          <div class="email-input-row">
+            <input type="email" id="alerts-lookup-email" class="form-input" placeholder="Enter your email" />
+            <button id="alerts-lookup-btn" class="btn btn-secondary">Load Alerts</button>
+          </div>
+          <div id="alerts-loading" class="state-box" style="display:none;">
+            <div class="spinner"></div><p>Loading alerts...</p>
+          </div>
+          <div id="alerts-empty" class="state-box" style="display:none;">
+            <div class="state-icon">🔔</div><h3>No active alerts</h3>
+          </div>
+          <div id="alerts-list" class="alerts-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PREDICTIONS TAB ===== -->
+    <section id="tab-predictions" class="tab-panel">
+      <div class="card">
+        <h2 class="section-title">AI Price Prediction</h2>
+        <p class="section-desc">Our algorithm analyzes booking patterns to predict whether prices will rise or fall.</p>
+        <div class="prediction-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">From (IATA)</label>
+              <input type="text" id="pred-origin" class="form-input" placeholder="e.g. JFK" maxlength="3" style="text-transform:uppercase" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">To (IATA)</label>
+              <input type="text" id="pred-destination" class="form-input" placeholder="e.g. LAX" maxlength="3" style="text-transform:uppercase" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Travel Date</label>
+              <input type="date" id="pred-date" class="form-input" />
+            </div>
+            <div class="form-group form-group-btn">
+              <button id="pred-btn" class="btn btn-primary">Analyze Price</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pred-loading" class="state-box" style="display:none;">
+          <div class="spinner"></div><p>Analyzing prices...</p>
+        </div>
+        <div id="pred-error" class="state-box" style="display:none;">
+          <div class="state-icon">⚠️</div>
+          <h3>Route not found</h3>
+          <p>We don't have data for that route.</p>
+        </div>
+        <div id="pred-result" style="display:none;">
+          <div class="pred-summary">
+            <div class="pred-card pred-card-main">
+              <div class="pred-route" id="pred-route-label"></div>
+              <div class="pred-price-row">
+                <div class="pred-price-block">
+                  <div class="pred-price-label">Current Avg Price</div>
+                  <div class="pred-price-value" id="pred-current-price"></div>
+                </div>
+                <div class="pred-arrow" id="pred-arrow">→</div>
+                <div class="pred-price-block">
+                  <div class="pred-price-label">Predicted Price</div>
+                  <div class="pred-price-value" id="pred-predicted-price"></div>
+                </div>
+              </div>
+              <div class="pred-meta-row">
+                <span class="pred-trend-badge" id="pred-trend-badge"></span>
+                <span class="pred-confidence" id="pred-confidence"></span>
+              </div>
+              <div class="pred-recommendation" id="pred-recommendation"></div>
             </div>
           </div>
 
-          <!-- Hidden max results -->
-          <input type="hidden" id="max-results" value="20" />
-
-          <button type="submit" id="search-btn" class="search-btn">
-            ✈️ &nbsp;Search Flights
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Results -->
-  <div class="container">
-    <div id="results-area" class="hidden" style="margin-top:2rem">
-      <!-- Summary bar -->
-      <div id="results-bar" class="results-bar hidden">
-        <div>
-          <span class="summary">
-            Found <strong id="total-results">0</strong> flights &nbsp;·&nbsp;
-            Cheapest: <span id="cheapest-price" class="cheapest">–</span>
-          </span>
-        </div>
-        <div class="providers-list" id="providers-queried"></div>
-        <div>
-          <select id="sort-select" class="sort-select">
-            <option value="price-asc">Price: Low → High</option>
-            <option value="price-desc">Price: High → Low</option>
-          </select>
+          <!-- Price History Chart -->
+          <div class="chart-section">
+            <h3 class="chart-title">14-Day Price History</h3>
+            <div class="chart-container">
+              <div id="price-chart" class="price-chart"></div>
+              <div id="chart-labels" class="chart-labels"></div>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Cards -->
-      <div id="flights-grid" class="flights-grid"></div>
-    </div>
-  </div>
-</section>
+  </main>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 2 — PRICE PREDICTION                                           -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<section id="section-predict" class="section">
-  <div class="container">
-    <div class="form-card">
-      <h2>🔮 Price Prediction</h2>
-      <p style="color:var(--gray-600);margin-bottom:1.25rem;font-size:.92rem">
-        Enter flight details and let our AI predict whether prices will rise or fall.
-      </p>
-      <form id="predict-form">
-        <div class="form-grid">
-          <div class="field-group">
-            <label for="pred-origin">From</label>
-            <input id="pred-origin" type="text" maxlength="3" placeholder="e.g. JFK" required />
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Book Flight</h2>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-flight-summary" class="modal-flight-summary"></div>
+        <div class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="booking-name" class="form-input" placeholder="John Doe" />
           </div>
-          <div class="field-group">
-            <label for="pred-destination">To</label>
-            <input id="pred-destination" type="text" maxlength="3" placeholder="e.g. LAX" required />
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="booking-email" class="form-input" placeholder="john@example.com" />
           </div>
-          <div class="field-group">
-            <label for="pred-dep-date">Departure Date</label>
-            <input id="pred-dep-date" type="date" required />
-          </div>
-          <div class="field-group">
-            <label for="pred-days">Days Until Departure</label>
-            <input id="pred-days" type="number" min="0" max="365" value="30" required />
-          </div>
-          <div class="field-group">
-            <label for="pred-price">Current Price (USD)</label>
-            <input id="pred-price" type="number" min="1" step="0.01" placeholder="e.g. 350.00" required />
-          </div>
-          <div class="field-group">
-            <label for="pred-adults">Adults</label>
-            <select id="pred-adults">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
+          <div class="form-group">
+            <label class="form-label">Passengers</label>
+            <select id="booking-passengers" class="form-input">
+              <option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option>
             </select>
           </div>
-        </div>
-        <button type="submit" id="predict-btn" class="submit-btn">🔮 Predict Price</button>
-      </form>
-    </div>
-
-    <!-- Prediction Result -->
-    <div id="predict-result" class="prediction-result hidden">
-      <div id="pred-result-content"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 3 — PRICE ALERTS                                               -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<section id="section-alerts" class="section">
-  <div class="container">
-    <!-- Create alert form -->
-    <div class="form-card">
-      <h2>🔔 Set a Price Alert</h2>
-      <p style="color:var(--gray-600);margin-bottom:1.25rem;font-size:.92rem">
-        Get notified when a flight drops below your target price.
-      </p>
-      <form id="alert-form">
-        <div class="form-grid">
-          <div class="field-group">
-            <label for="alert-origin">From</label>
-            <input id="alert-origin" type="text" maxlength="3" placeholder="e.g. JFK" required />
-          </div>
-          <div class="field-group">
-            <label for="alert-destination">To</label>
-            <input id="alert-destination" type="text" maxlength="3" placeholder="e.g. LAX" required />
-          </div>
-          <div class="field-group">
-            <label for="alert-dep-date">Departure Date</label>
-            <input id="alert-dep-date" type="date" required />
-          </div>
-          <div class="field-group">
-            <label for="alert-price">Target Price</label>
-            <input id="alert-price" type="number" min="1" step="0.01" placeholder="e.g. 300.00" required />
-          </div>
-          <div class="field-group">
-            <label for="alert-currency">Currency</label>
-            <select id="alert-currency">
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="INR">INR</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label for="alert-email">Email <span style="color:var(--gray-400)">(optional)</span></label>
-            <input id="alert-email" type="email" placeholder="you@example.com" />
+          <div class="modal-price-summary">
+            <span>Total Price:</span>
+            <span id="modal-total-price" class="modal-total"></span>
           </div>
         </div>
-        <button type="submit" id="alert-btn" class="submit-btn">🔔 Set Alert</button>
-      </form>
-    </div>
-
-    <!-- Alerts table -->
-    <div class="form-card">
-      <h2>📋 My Alerts</h2>
-      <div class="alerts-table-wrap">
-        <table class="alerts-table">
-          <thead>
-            <tr>
-              <th>Route</th>
-              <th>Date</th>
-              <th>Target Price</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="alerts-tbody">
-            <tr>
-              <td colspan="7" class="text-center" style="color:var(--gray-400);padding:2rem">
-                Switch to this tab to load alerts.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="booking-error" class="alert-msg error" style="display:none;"></div>
+        <div id="booking-success" class="booking-success-box" style="display:none;">
+          <div class="success-icon">✅</div>
+          <h3>Booking Confirmed!</h3>
+          <p>Booking Reference: <strong id="booking-ref"></strong></p>
+          <p>A confirmation has been sent to <span id="booking-email-confirm"></span></p>
+        </div>
+      </div>
+      <div class="modal-footer" id="modal-footer">
+        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="confirm-booking-btn">Confirm Booking</button>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── Toast container ────────────────────────────────────────────────── -->
-<div id="toast-container" class="toast-container"></div>
-
-<!-- ── Footer ─────────────────────────────────────────────────────────── -->
-<footer>
-  <strong>FlightAI</strong> &nbsp;·&nbsp; Powered by FastAPI &amp; AI &nbsp;·&nbsp;
-  Searches Amadeus · Kiwi · Duffel
-</footer>
-
-<script type="module" src="/frontend/js/app.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>

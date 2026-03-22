@@ -1,69 +1,48 @@
-"""FastAPI application entrypoint."""
-import logging
-import os
 from contextlib import asynccontextmanager
-from typing import Any
+from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import alerts, predictions, search
-from app.config import get_settings
-
-logger = logging.getLogger(__name__)
-settings = get_settings()
+from app.database import init_db, AsyncSessionLocal
+from app.seed import seed_database
+from app.routes import flights, airports, bookings, alerts, predictions
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan: startup and shutdown hooks."""
-    logger.info("Starting Flight Price Agent API (env=%s)", settings.environment)
+    await init_db()
+    async with AsyncSessionLocal() as session:
+        await seed_database(session)
     yield
-    logger.info("Shutting down Flight Price Agent API")
-    # Close aggregator HTTP clients if they were initialised
-    from app.api.dependencies import _get_aggregator_instance
-    try:
-        agg = _get_aggregator_instance()
-        await agg.close()
-    except Exception:
-        pass
 
 
-app = FastAPI(
-    title="Flight Price Agent",
-    description="AI-powered flight price agent that finds better deals than Skyscanner",
-    version="0.1.0",
-    lifespan=lifespan,
-)
+app = FastAPI(title="FlightSearch API", version="1.0.0", lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+    if (FRONTEND_DIR / "css").exists():
+        app.mount("/css", StaticFiles(directory=str(FRONTEND_DIR / "css")), name="css")
+    if (FRONTEND_DIR / "js").exists():
+        app.mount("/js", StaticFiles(directory=str(FRONTEND_DIR / "js")), name="js")
 
-app.include_router(search.router, prefix="/api/v1")
-app.include_router(alerts.router, prefix="/api/v1")
-app.include_router(predictions.router, prefix="/api/v1")
-
-# Mount frontend static files
-_frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-if os.path.isdir(_frontend_dir):
-    app.mount("/frontend", StaticFiles(directory=_frontend_dir), name="frontend")
+app.include_router(flights.router)
+app.include_router(airports.router)
+app.include_router(bookings.router)
+app.include_router(alerts.router)
+app.include_router(predictions.router)
 
 
-@app.get("/", summary="Web UI")
-async def root() -> FileResponse:
-    """Serve the frontend SPA."""
-    index_path = os.path.join(_frontend_dir, "index.html")
-    return FileResponse(index_path)
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
-@app.get("/health", summary="Health check")
-async def health() -> dict[str, Any]:
-    """Return API health status."""
-    return {"status": "healthy", "environment": settings.environment}
+@app.get("/")
+async def serve_frontend():
+    index = FRONTEND_DIR / "index.html"
+    if index.exists():
+        return FileResponse(str(index))
+    return {"message": "FlightSearch API", "docs": "/docs"}
