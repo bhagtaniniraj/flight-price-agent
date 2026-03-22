@@ -65,6 +65,16 @@ AIRPORTS = [
     {"iata": "DEL", "name": "Indira Gandhi International", "city": "New Delhi", "country": "IN", "lat": 28.5562, "lon": 77.1000, "tz": "Asia/Kolkata"},
     {"iata": "BOM", "name": "Chhatrapati Shivaji International", "city": "Mumbai", "country": "IN", "lat": 19.0896, "lon": 72.8656, "tz": "Asia/Kolkata"},
     {"iata": "BLR", "name": "Kempegowda International", "city": "Bengaluru", "country": "IN", "lat": 13.1986, "lon": 77.7066, "tz": "Asia/Kolkata"},
+    {"iata": "HYD", "name": "Rajiv Gandhi International", "city": "Hyderabad", "country": "IN", "lat": 17.2403, "lon": 78.4294, "tz": "Asia/Kolkata"},
+    {"iata": "MAA", "name": "Chennai International", "city": "Chennai", "country": "IN", "lat": 12.9941, "lon": 80.1709, "tz": "Asia/Kolkata"},
+    {"iata": "CCU", "name": "Netaji Subhas Chandra Bose International", "city": "Kolkata", "country": "IN", "lat": 22.6520, "lon": 88.4463, "tz": "Asia/Kolkata"},
+    {"iata": "GOI", "name": "Goa International (Manohar Parrikar)", "city": "Goa", "country": "IN", "lat": 15.3808, "lon": 73.8314, "tz": "Asia/Kolkata"},
+    {"iata": "COK", "name": "Cochin International", "city": "Kochi", "country": "IN", "lat": 10.1520, "lon": 76.4019, "tz": "Asia/Kolkata"},
+    {"iata": "PNQ", "name": "Pune Airport", "city": "Pune", "country": "IN", "lat": 18.5822, "lon": 73.9197, "tz": "Asia/Kolkata"},
+    {"iata": "AMD", "name": "Sardar Vallabhbhai Patel International", "city": "Ahmedabad", "country": "IN", "lat": 23.0772, "lon": 72.6347, "tz": "Asia/Kolkata"},
+    {"iata": "JAI", "name": "Jaipur International", "city": "Jaipur", "country": "IN", "lat": 26.8242, "lon": 75.8122, "tz": "Asia/Kolkata"},
+    {"iata": "GAU", "name": "Lokpriya Gopinath Bordoloi International", "city": "Guwahati", "country": "IN", "lat": 26.1061, "lon": 91.5859, "tz": "Asia/Kolkata"},
+    {"iata": "IXC", "name": "Chandigarh International", "city": "Chandigarh", "country": "IN", "lat": 30.6735, "lon": 76.7885, "tz": "Asia/Kolkata"},
     {"iata": "SYD", "name": "Sydney Kingsford Smith", "city": "Sydney", "country": "AU", "lat": -33.9399, "lon": 151.1753, "tz": "Australia/Sydney"},
     {"iata": "MEL", "name": "Melbourne Airport", "city": "Melbourne", "country": "AU", "lat": -37.6690, "lon": 144.8410, "tz": "Australia/Melbourne"},
     {"iata": "AKL", "name": "Auckland Airport", "city": "Auckland", "country": "NZ", "lat": -37.0082, "lon": 174.7850, "tz": "Pacific/Auckland"},
@@ -101,6 +111,11 @@ AIRLINES = [
     {"iata": "MH", "name": "Malaysia Airlines", "color": "#CC0000", "country": "MY"},
     {"iata": "TG", "name": "Thai Airways", "color": "#8B008B", "country": "TH"},
     {"iata": "AI", "name": "Air India", "color": "#FF6B00", "country": "IN"},
+    {"iata": "6E", "name": "IndiGo", "color": "#0033A0", "country": "IN"},
+    {"iata": "SG", "name": "SpiceJet", "color": "#FF0000", "country": "IN"},
+    {"iata": "UK", "name": "Vistara", "color": "#4A154B", "country": "IN"},
+    {"iata": "QP", "name": "Akasa Air", "color": "#FF6F00", "country": "IN"},
+    {"iata": "IX", "name": "Air India Express", "color": "#E53935", "country": "IN"},
     {"iata": "QF", "name": "Qantas", "color": "#E40000", "country": "AU"},
     {"iata": "AC", "name": "Air Canada", "color": "#CC0000", "country": "CA"},
     {"iata": "AM", "name": "Aeromexico", "color": "#006BB6", "country": "MX"},
@@ -258,9 +273,96 @@ ROUTES = [
     ("YYZ", "LHR", "AC"), ("LHR", "YYZ", "AC"),
     ("YVR", "LHR", "AC"), ("LHR", "YVR", "AC"),
     ("YYZ", "CDG", "AC"), ("CDG", "YYZ", "AC"),
+    # Indian domestic - DEL routes
+    ("DEL", "BOM", "6E"), ("BOM", "DEL", "6E"),
+    ("DEL", "BOM", "AI"), ("BOM", "DEL", "AI"),
+    ("DEL", "BOM", "SG"), ("BOM", "DEL", "SG"),
+    ("DEL", "BOM", "QP"), ("BOM", "DEL", "QP"),
+    ("DEL", "BLR", "6E"), ("BLR", "DEL", "6E"),
+    ("DEL", "BLR", "AI"), ("BLR", "DEL", "AI"),
+    ("DEL", "BLR", "SG"), ("BLR", "DEL", "SG"),
+    ("DEL", "HYD", "6E"), ("HYD", "DEL", "6E"),
+    ("DEL", "HYD", "AI"), ("HYD", "DEL", "AI"),
+    ("DEL", "HYD", "SG"), ("HYD", "DEL", "SG"),
+    ("DEL", "MAA", "6E"), ("MAA", "DEL", "6E"),
+    ("DEL", "MAA", "AI"), ("MAA", "DEL", "AI"),
+    ("DEL", "MAA", "SG"), ("MAA", "DEL", "SG"),
+    ("DEL", "CCU", "6E"), ("CCU", "DEL", "6E"),
+    ("DEL", "CCU", "AI"), ("CCU", "DEL", "AI"),
+    ("DEL", "CCU", "SG"), ("CCU", "DEL", "SG"),
+    ("DEL", "GOI", "6E"), ("GOI", "DEL", "6E"),
+    ("DEL", "GOI", "SG"), ("GOI", "DEL", "SG"),
+    ("DEL", "GOI", "QP"), ("GOI", "DEL", "QP"),
+    ("DEL", "COK", "6E"), ("COK", "DEL", "6E"),
+    ("DEL", "COK", "AI"), ("COK", "DEL", "AI"),
+    ("DEL", "PNQ", "6E"), ("PNQ", "DEL", "6E"),
+    ("DEL", "PNQ", "SG"), ("PNQ", "DEL", "SG"),
+    ("DEL", "AMD", "6E"), ("AMD", "DEL", "6E"),
+    ("DEL", "AMD", "SG"), ("AMD", "DEL", "SG"),
+    ("DEL", "AMD", "QP"), ("AMD", "DEL", "QP"),
+    ("DEL", "JAI", "6E"), ("JAI", "DEL", "6E"),
+    ("DEL", "JAI", "SG"), ("JAI", "DEL", "SG"),
+    ("DEL", "GAU", "6E"), ("GAU", "DEL", "6E"),
+    ("DEL", "GAU", "AI"), ("GAU", "DEL", "AI"),
+    ("DEL", "IXC", "6E"), ("IXC", "DEL", "6E"),
+    ("DEL", "IXC", "SG"), ("IXC", "DEL", "SG"),
+    # Indian domestic - BOM routes
+    ("BOM", "BLR", "6E"), ("BLR", "BOM", "6E"),
+    ("BOM", "BLR", "AI"), ("BLR", "BOM", "AI"),
+    ("BOM", "BLR", "SG"), ("BLR", "BOM", "SG"),
+    ("BOM", "BLR", "QP"), ("BLR", "BOM", "QP"),
+    ("BOM", "HYD", "6E"), ("HYD", "BOM", "6E"),
+    ("BOM", "HYD", "AI"), ("HYD", "BOM", "AI"),
+    ("BOM", "HYD", "SG"), ("HYD", "BOM", "SG"),
+    ("BOM", "MAA", "6E"), ("MAA", "BOM", "6E"),
+    ("BOM", "MAA", "AI"), ("MAA", "BOM", "AI"),
+    ("BOM", "MAA", "SG"), ("MAA", "BOM", "SG"),
+    ("BOM", "CCU", "6E"), ("CCU", "BOM", "6E"),
+    ("BOM", "CCU", "AI"), ("CCU", "BOM", "AI"),
+    ("BOM", "GOI", "6E"), ("GOI", "BOM", "6E"),
+    ("BOM", "GOI", "SG"), ("GOI", "BOM", "SG"),
+    ("BOM", "GOI", "QP"), ("GOI", "BOM", "QP"),
+    ("BOM", "GOI", "IX"), ("GOI", "BOM", "IX"),
+    ("BOM", "COK", "6E"), ("COK", "BOM", "6E"),
+    ("BOM", "COK", "AI"), ("COK", "BOM", "AI"),
+    ("BOM", "COK", "IX"), ("COK", "BOM", "IX"),
+    ("BOM", "PNQ", "6E"), ("PNQ", "BOM", "6E"),
+    ("BOM", "PNQ", "SG"), ("PNQ", "BOM", "SG"),
+    ("BOM", "AMD", "6E"), ("AMD", "BOM", "6E"),
+    ("BOM", "AMD", "SG"), ("AMD", "BOM", "SG"),
+    ("BOM", "JAI", "6E"), ("JAI", "BOM", "6E"),
+    ("BOM", "JAI", "SG"), ("JAI", "BOM", "SG"),
+    # Indian domestic - BLR routes
+    ("BLR", "HYD", "6E"), ("HYD", "BLR", "6E"),
+    ("BLR", "HYD", "SG"), ("HYD", "BLR", "SG"),
+    ("BLR", "MAA", "6E"), ("MAA", "BLR", "6E"),
+    ("BLR", "MAA", "SG"), ("MAA", "BLR", "SG"),
+    ("BLR", "MAA", "AI"), ("MAA", "BLR", "AI"),
+    ("BLR", "CCU", "6E"), ("CCU", "BLR", "6E"),
+    ("BLR", "CCU", "AI"), ("CCU", "BLR", "AI"),
+    ("BLR", "GOI", "6E"), ("GOI", "BLR", "6E"),
+    ("BLR", "GOI", "SG"), ("GOI", "BLR", "SG"),
+    ("BLR", "COK", "6E"), ("COK", "BLR", "6E"),
+    ("BLR", "COK", "AI"), ("COK", "BLR", "AI"),
+    ("BLR", "COK", "IX"), ("COK", "BLR", "IX"),
+    ("BLR", "PNQ", "6E"), ("PNQ", "BLR", "6E"),
+    ("BLR", "PNQ", "SG"), ("PNQ", "BLR", "SG"),
+    # Indian domestic - other city pairs
+    ("HYD", "MAA", "6E"), ("MAA", "HYD", "6E"),
+    ("HYD", "MAA", "SG"), ("MAA", "HYD", "SG"),
+    ("HYD", "CCU", "6E"), ("CCU", "HYD", "6E"),
+    ("HYD", "CCU", "AI"), ("CCU", "HYD", "AI"),
+    ("HYD", "GOI", "6E"), ("GOI", "HYD", "6E"),
+    ("HYD", "GOI", "SG"), ("GOI", "HYD", "SG"),
+    ("MAA", "CCU", "6E"), ("CCU", "MAA", "6E"),
+    ("MAA", "CCU", "AI"), ("CCU", "MAA", "AI"),
+    ("MAA", "COK", "6E"), ("COK", "MAA", "6E"),
+    ("MAA", "COK", "SG"), ("COK", "MAA", "SG"),
+    ("CCU", "GAU", "6E"), ("GAU", "CCU", "6E"),
+    ("CCU", "GAU", "SG"), ("GAU", "CCU", "SG"),
 ]
 
-BUDGET_AIRLINES = {"WN", "F9", "NK"}
+BUDGET_AIRLINES = {"WN", "F9", "NK", "6E", "SG", "QP", "IX"}
 PREMIUM_AIRLINES = {"EK", "QR", "SQ", "CX", "EY", "BA", "LH", "AF"}
 
 DEPARTURE_HOURS = [6, 8, 11, 14, 17, 20]
@@ -268,15 +370,56 @@ DEPARTURE_HOURS = [6, 8, 11, 14, 17, 20]
 _rng = random.Random(42)
 
 
-def _economy_price(dist_km: float) -> float:
-    if dist_km < 1000:
-        base = 80
+def _economy_price(dist_km: float, airline_iata: str = "", origin_country: str = "", dest_country: str = "", day_offset: int = 0, dep_hour: int = 12) -> tuple[float, bool]:
+    is_indian_domestic = (origin_country == "IN" and dest_country == "IN")
+
+    if is_indian_domestic:
+        if dist_km < 500:
+            base = 30.0   # ~₹2,500
+        elif dist_km < 1000:
+            base = 42.0   # ~₹3,500
+        elif dist_km < 2000:
+            base = 55.0   # ~₹4,500
+        else:
+            base = 72.0   # ~₹6,000
     elif dist_km < 5000:
-        base = 200
+        base = _rng.uniform(150, 250)
     else:
-        base = 400
-    variation = _rng.uniform(0.7, 1.3)
-    return round(base * variation, 2)
+        base = _rng.uniform(350, 600)
+
+    # Airline tier multiplier
+    if airline_iata in BUDGET_AIRLINES:
+        base *= 0.65
+    elif airline_iata in PREMIUM_AIRLINES:
+        base *= 1.4
+
+    # Weekend surcharge (0=Mon … 6=Sun; Fri=4, Sat=5, Sun=6)
+    dep_date = date.today() + timedelta(days=day_offset)
+    if dep_date.weekday() in (4, 5, 6):
+        base *= 1.15
+
+    # Time-of-day discounts
+    if 0 <= dep_hour < 6:
+        base *= 0.85   # red-eye discount
+    elif 6 <= dep_hour < 8:
+        base *= 0.90   # early morning discount
+
+    # Advance booking discount / last-minute surge
+    if day_offset >= 45:
+        base *= 0.85
+    elif day_offset >= 30:
+        base *= 0.90
+    elif 7 <= day_offset <= 14:
+        base *= 1.10
+    elif day_offset < 7:
+        base *= 1.25
+
+    # Deal probability 20%
+    is_deal = _rng.random() < 0.20
+    if is_deal:
+        base *= 0.70
+
+    return round(base, 2), is_deal
 
 
 async def generate_all_data(session: AsyncSession):
@@ -327,7 +470,6 @@ async def generate_all_data(session: AsyncSession):
         dest_info = iata_info[dest_iata]
         dist = haversine_km(orig_info["lat"], orig_info["lon"], dest_info["lat"], dest_info["lon"])
         duration_min = max(45, int(dist / 800 * 60))
-        economy_price = _economy_price(dist)
         bags = 0 if airline_iata in BUDGET_AIRLINES else (2 if airline_iata in PREMIUM_AIRLINES else 1)
 
         prefix = airline_iata
@@ -346,8 +488,14 @@ async def generate_all_data(session: AsyncSession):
                 flight_num_counter[prefix] += 1
                 fn = f"{prefix}{flight_num_counter[prefix]}"
 
-                is_deal = _rng.random() < 0.15
-                ep = round(economy_price * 0.8, 2) if is_deal else economy_price
+                ep, is_deal = _economy_price(
+                    dist,
+                    airline_iata=airline_iata,
+                    origin_country=orig_info["country"],
+                    dest_country=dest_info["country"],
+                    day_offset=day_offset,
+                    dep_hour=hour,
+                )
                 bp = round(ep * 3.0, 2)
                 fp = round(ep * 6.0, 2)
 
@@ -391,6 +539,14 @@ async def generate_all_data(session: AsyncSession):
         ("AKL", "LAX", "SYD", "QF"),
         ("MNL", "LHR", "SIN", "SQ"),
         ("BLR", "LHR", "DXB", "EK"),
+        # Indian connecting routes
+        ("DEL", "BOM", "BLR", "6E"),
+        ("CCU", "BLR", "DEL", "6E"),
+        ("GOI", "DEL", "BOM", "6E"),
+        ("MAA", "DEL", "BLR", "AI"),
+        ("COK", "DEL", "BOM", "AI"),
+        ("GAU", "BOM", "DEL", "6E"),
+        ("AMD", "BLR", "BOM", "6E"),
     ]
 
     for (orig_iata, dest_iata, hub_iata, airline_iata) in CONNECT_ROUTES:
@@ -406,7 +562,6 @@ async def generate_all_data(session: AsyncSession):
         dist2 = haversine_km(hub_info["lat"], hub_info["lon"], dest_info["lat"], dest_info["lon"])
         total_dist = dist1 + dist2
         duration_min = max(90, int(total_dist / 800 * 60) + 90)
-        economy_price = _economy_price(total_dist) * 1.1
         bags = 0 if airline_iata in BUDGET_AIRLINES else 1
 
         prefix = airline_iata
@@ -423,8 +578,14 @@ async def generate_all_data(session: AsyncSession):
                 flight_num_counter[prefix] += 1
                 fn = f"{prefix}{flight_num_counter[prefix]}"
 
-                is_deal = _rng.random() < 0.15
-                ep = round(economy_price * 0.8, 2) if is_deal else round(economy_price, 2)
+                ep, is_deal = _economy_price(
+                    total_dist * 1.1,
+                    airline_iata=airline_iata,
+                    origin_country=orig_info["country"],
+                    dest_country=dest_info["country"],
+                    day_offset=day_offset,
+                    dep_hour=hour,
+                )
                 bp = round(ep * 3.0, 2)
                 fp = round(ep * 6.0, 2)
 

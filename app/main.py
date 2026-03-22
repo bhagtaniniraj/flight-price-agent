@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database import init_db, AsyncSessionLocal
 from app.seed import seed_database
-from app.routes import flights, airports, bookings, alerts, predictions
+from app.routes import flights, airports, bookings, alerts, predictions, payments
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.include_router(airports.router)
 app.include_router(bookings.router)
 app.include_router(alerts.router)
 app.include_router(predictions.router)
+app.include_router(payments.router)
 
 
 @app.get("/health")
