@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -51,7 +51,7 @@ class Flight(Base):
     bags_included: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     is_deal: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     seats_available: Mapped[int] = mapped_column(Integer, default=50, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     airline: Mapped["Airline"] = relationship("Airline", back_populates="flights")
     origin: Mapped["Airport"] = relationship("Airport", foreign_keys=[origin_id], back_populates="origins")
@@ -71,7 +71,7 @@ class Booking(Base):
     seat_class: Mapped[str] = mapped_column(String(20), nullable=False)
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="confirmed", nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     flight: Mapped["Flight"] = relationship("Flight", back_populates="bookings")
 
@@ -85,4 +85,4 @@ class PriceAlert(Base):
     target_price: Mapped[float] = mapped_column(Float, nullable=False)
     user_email: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
