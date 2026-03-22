@@ -354,6 +354,30 @@ $('#confirm-booking-btn').addEventListener('click', async () => {
     hide($('#modal-footer'));
     $('#booking-ref').textContent = booking.booking_reference;
     $('#booking-email-confirm').textContent = email;
+
+    // Show Pay Now button
+    const payBtn = $('#pay-now-btn');
+    if (payBtn) {
+      payBtn.style.display = '';
+      payBtn.onclick = async () => {
+        payBtn.disabled = true;
+        payBtn.textContent = 'Redirecting to payment...';
+        try {
+          const origin = window.location.origin;
+          const session = await api.createCheckoutSession(
+            booking.id,
+            `${origin}/?payment=success&ref=${booking.booking_reference}`,
+            `${origin}/?payment=cancel&ref=${booking.booking_reference}`,
+          );
+          window.location.href = session.checkout_url;
+        } catch (err) {
+          payBtn.disabled = false;
+          payBtn.textContent = 'Pay Now';
+          showError($('#booking-error'), err.message);
+        }
+      };
+    }
+
     show($('#booking-success'));
   } catch (e) {
     showError($('#booking-error'), e.message);

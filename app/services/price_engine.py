@@ -7,14 +7,17 @@ def compute_price(base_price: float, seat_class: str, departure_dt: datetime) ->
     today = date.today()
     days_until = (dep_date - today).days
 
+    # Days-until-departure surge (closer = higher prices)
     if days_until <= 3:
         urgency = 1.35
     elif days_until <= 7:
-        urgency = 1.20
+        urgency = 1.25
     elif days_until <= 14:
         urgency = 1.10
     elif days_until <= 30:
         urgency = 1.05
+    elif days_until >= 45:
+        urgency = 0.90
     else:
         urgency = 1.0
 

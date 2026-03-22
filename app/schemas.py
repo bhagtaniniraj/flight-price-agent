@@ -69,6 +69,7 @@ class BookingResponse(BaseModel):
     seat_class: str
     total_price: float
     status: str
+    payment_status: str
     created_at: datetime
 
 
@@ -105,3 +106,20 @@ class PredictionResponse(BaseModel):
     recommendation: str
     confidence: float
     price_history: list[PricePoint]
+
+
+class CheckoutRequest(BaseModel):
+    booking_id: int
+    success_url: str
+    cancel_url: str
+
+
+class CheckoutResponse(BaseModel):
+    checkout_url: str
+    session_id: str
+
+
+class PaymentStatusResponse(BaseModel):
+    booking_id: int
+    status: str
+    amount: float

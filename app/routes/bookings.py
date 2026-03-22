@@ -101,6 +101,7 @@ async def create_booking(data: BookingCreate, db: AsyncSession = Depends(get_db)
         seat_class=booking.seat_class,
         total_price=booking.total_price,
         status=booking.status,
+        payment_status=booking.payment_status,
         created_at=booking.created_at,
     )
 
@@ -133,6 +134,7 @@ async def list_bookings(email: str = Query(...), db: AsyncSession = Depends(get_
             seat_class=b.seat_class,
             total_price=b.total_price,
             status=b.status,
+            payment_status=b.payment_status,
             created_at=b.created_at,
         ))
     return out
@@ -165,6 +167,7 @@ async def get_booking(booking_id: int, db: AsyncSession = Depends(get_db)):
         seat_class=booking.seat_class,
         total_price=booking.total_price,
         status=booking.status,
+        payment_status=booking.payment_status,
         created_at=booking.created_at,
     )
 

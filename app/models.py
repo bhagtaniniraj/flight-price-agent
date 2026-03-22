@@ -71,6 +71,8 @@ class Booking(Base):
     seat_class: Mapped[str] = mapped_column(String(20), nullable=False)
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="confirmed", nullable=False)
+    payment_status: Mapped[str] = mapped_column(String(20), default="pending", nullable=False)
+    stripe_session_id: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     flight: Mapped["Flight"] = relationship("Flight", back_populates="bookings")

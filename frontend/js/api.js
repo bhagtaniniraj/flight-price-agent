@@ -101,4 +101,27 @@ const api = {
     }
     return res.json();
   },
+
+  async createCheckoutSession(bookingId, successUrl, cancelUrl) {
+    const res = await fetch('/api/payments/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        booking_id: bookingId,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Payment session creation failed (${res.status})`);
+    }
+    return res.json();
+  },
+
+  async getPaymentStatus(bookingId) {
+    const res = await fetch(`/api/payments/status/${bookingId}`);
+    if (!res.ok) throw new Error('Could not get payment status');
+    return res.json();
+  },
 };
