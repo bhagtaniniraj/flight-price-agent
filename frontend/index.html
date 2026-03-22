@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlightAI – Smart Flight Price Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/frontend/css/styles.css" />
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-brand">
+      <span class="plane-icon">✈️</span>
+      <span>FlightAI</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-section="section-search">🔍 Search</button>
+      <button class="nav-tab" data-section="section-predict">🔮 Predict</button>
+      <button class="nav-tab" data-section="section-alerts">🔔 Alerts</button>
+    </div>
+    <div id="health-dot" class="health-dot" title="Checking API…"></div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 1 — FLIGHT SEARCH                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section id="section-search" class="section active">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="container">
+      <h1 class="hero-title">Find the Best Flight Deals</h1>
+      <p class="hero-subtitle">AI-powered search across Amadeus, Kiwi &amp; Duffel — all at once</p>
+
+      <!-- Search card -->
+      <div class="search-card">
+        <form id="search-form">
+          <!-- Row 1: origin ⇄ destination -->
+          <div class="search-row">
+            <div class="field-group">
+              <label for="origin">From</label>
+              <input id="origin" type="text" maxlength="3" placeholder="e.g. JFK" autocomplete="off" required />
+            </div>
+            <button type="button" id="swap-btn" class="swap-btn" title="Swap airports">⇄</button>
+            <div class="field-group">
+              <label for="destination">To</label>
+              <input id="destination" type="text" maxlength="3" placeholder="e.g. LAX" autocomplete="off" required />
+            </div>
+          </div>
+
+          <!-- Row 2: dates, passengers, currency -->
+          <div class="search-row-2">
+            <div class="field-group">
+              <label for="departure-date">Departure</label>
+              <input id="departure-date" type="date" required />
+            </div>
+            <div class="field-group">
+              <label for="return-date">Return <span style="color:var(--gray-400)">(optional)</span></label>
+              <input id="return-date" type="date" />
+            </div>
+            <div class="field-group">
+              <label for="adults">Passengers</label>
+              <select id="adults">
+                <option value="1">1 Adult</option>
+                <option value="2">2 Adults</option>
+                <option value="3">3 Adults</option>
+                <option value="4">4 Adults</option>
+                <option value="5">5 Adults</option>
+                <option value="6">6 Adults</option>
+                <option value="7">7 Adults</option>
+                <option value="8">8 Adults</option>
+                <option value="9">9 Adults</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label for="currency">Currency</label>
+              <select id="currency">
+                <option value="USD">🇺🇸 USD</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="GBP">🇬🇧 GBP</option>
+                <option value="INR">🇮🇳 INR</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Hidden max results -->
+          <input type="hidden" id="max-results" value="20" />
+
+          <button type="submit" id="search-btn" class="search-btn">
+            ✈️ &nbsp;Search Flights
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="container">
+    <div id="results-area" class="hidden" style="margin-top:2rem">
+      <!-- Summary bar -->
+      <div id="results-bar" class="results-bar hidden">
+        <div>
+          <span class="summary">
+            Found <strong id="total-results">0</strong> flights &nbsp;·&nbsp;
+            Cheapest: <span id="cheapest-price" class="cheapest">–</span>
+          </span>
+        </div>
+        <div class="providers-list" id="providers-queried"></div>
+        <div>
+          <select id="sort-select" class="sort-select">
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div id="flights-grid" class="flights-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 2 — PRICE PREDICTION                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section id="section-predict" class="section">
+  <div class="container">
+    <div class="form-card">
+      <h2>🔮 Price Prediction</h2>
+      <p style="color:var(--gray-600);margin-bottom:1.25rem;font-size:.92rem">
+        Enter flight details and let our AI predict whether prices will rise or fall.
+      </p>
+      <form id="predict-form">
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="pred-origin">From</label>
+            <input id="pred-origin" type="text" maxlength="3" placeholder="e.g. JFK" required />
+          </div>
+          <div class="field-group">
+            <label for="pred-destination">To</label>
+            <input id="pred-destination" type="text" maxlength="3" placeholder="e.g. LAX" required />
+          </div>
+          <div class="field-group">
+            <label for="pred-dep-date">Departure Date</label>
+            <input id="pred-dep-date" type="date" required />
+          </div>
+          <div class="field-group">
+            <label for="pred-days">Days Until Departure</label>
+            <input id="pred-days" type="number" min="0" max="365" value="30" required />
+          </div>
+          <div class="field-group">
+            <label for="pred-price">Current Price (USD)</label>
+            <input id="pred-price" type="number" min="1" step="0.01" placeholder="e.g. 350.00" required />
+          </div>
+          <div class="field-group">
+            <label for="pred-adults">Adults</label>
+            <select id="pred-adults">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" id="predict-btn" class="submit-btn">🔮 Predict Price</button>
+      </form>
+    </div>
+
+    <!-- Prediction Result -->
+    <div id="predict-result" class="prediction-result hidden">
+      <div id="pred-result-content"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SECTION 3 — PRICE ALERTS                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section id="section-alerts" class="section">
+  <div class="container">
+    <!-- Create alert form -->
+    <div class="form-card">
+      <h2>🔔 Set a Price Alert</h2>
+      <p style="color:var(--gray-600);margin-bottom:1.25rem;font-size:.92rem">
+        Get notified when a flight drops below your target price.
+      </p>
+      <form id="alert-form">
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="alert-origin">From</label>
+            <input id="alert-origin" type="text" maxlength="3" placeholder="e.g. JFK" required />
+          </div>
+          <div class="field-group">
+            <label for="alert-destination">To</label>
+            <input id="alert-destination" type="text" maxlength="3" placeholder="e.g. LAX" required />
+          </div>
+          <div class="field-group">
+            <label for="alert-dep-date">Departure Date</label>
+            <input id="alert-dep-date" type="date" required />
+          </div>
+          <div class="field-group">
+            <label for="alert-price">Target Price</label>
+            <input id="alert-price" type="number" min="1" step="0.01" placeholder="e.g. 300.00" required />
+          </div>
+          <div class="field-group">
+            <label for="alert-currency">Currency</label>
+            <select id="alert-currency">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="INR">INR</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="alert-email">Email <span style="color:var(--gray-400)">(optional)</span></label>
+            <input id="alert-email" type="email" placeholder="you@example.com" />
+          </div>
+        </div>
+        <button type="submit" id="alert-btn" class="submit-btn">🔔 Set Alert</button>
+      </form>
+    </div>
+
+    <!-- Alerts table -->
+    <div class="form-card">
+      <h2>📋 My Alerts</h2>
+      <div class="alerts-table-wrap">
+        <table class="alerts-table">
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Date</th>
+              <th>Target Price</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="alerts-tbody">
+            <tr>
+              <td colspan="7" class="text-center" style="color:var(--gray-400);padding:2rem">
+                Switch to this tab to load alerts.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Toast container ────────────────────────────────────────────────── -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────── -->
+<footer>
+  <strong>FlightAI</strong> &nbsp;·&nbsp; Powered by FastAPI &amp; AI &nbsp;·&nbsp;
+  Searches Amadeus · Kiwi · Duffel
+</footer>
+
+<script type="module" src="/frontend/js/app.js"></script>
+</body>
+</html>

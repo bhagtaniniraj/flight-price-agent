@@ -53,8 +53,7 @@ def test_health_endpoint(client: TestClient) -> None:
 
 
 def test_root_endpoint(client: TestClient) -> None:
-    """GET / returns API info."""
+    """GET / serves the frontend HTML page."""
     response = client.get("/")
     assert response.status_code == 200
-    data = response.json()
-    assert "Flight Price Agent" in data["message"]
+    assert "text/html" in response.headers.get("content-type", "")

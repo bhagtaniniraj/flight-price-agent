@@ -1,10 +1,13 @@
 """FastAPI application entrypoint."""
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import alerts, predictions, search
 from app.config import get_settings
@@ -47,16 +50,17 @@ app.include_router(search.router, prefix="/api/v1")
 app.include_router(alerts.router, prefix="/api/v1")
 app.include_router(predictions.router, prefix="/api/v1")
 
+# Mount frontend static files
+_frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+if os.path.isdir(_frontend_dir):
+    app.mount("/frontend", StaticFiles(directory=_frontend_dir), name="frontend")
 
-@app.get("/", summary="API root")
-async def root() -> dict[str, Any]:
-    """Return basic API info."""
-    return {
-        "message": "Flight Price Agent API",
-        "version": "0.1.0",
-        "docs": "/docs",
-        "environment": settings.environment,
-    }
+
+@app.get("/", summary="Web UI")
+async def root() -> FileResponse:
+    """Serve the frontend SPA."""
+    index_path = os.path.join(_frontend_dir, "index.html")
+    return FileResponse(index_path)
 
 
 @app.get("/health", summary="Health check")
