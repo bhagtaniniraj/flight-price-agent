@@ -6,10 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint (ruff)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.11
@@ -24,6 +29,8 @@ jobs:
   type-check:
     name: Type check (mypy)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.11
@@ -38,6 +45,8 @@ jobs:
   test:
     name: Tests (pytest)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.11
