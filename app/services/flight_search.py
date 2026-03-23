@@ -37,6 +37,8 @@ def _flight_to_response(flight: Flight, seat_class: str) -> FlightResponse:
         bags_included=flight.bags_included,
         is_deal=flight.is_deal,
         seats_available=flight.seats_available,
+        source="seed",
+        booking_link="",
     )
 
 
@@ -66,46 +68,60 @@ async def search_flights(
 
     if not origin_airport or not dest_airport:
         logger.warning("Airport not found: origin=%s dest=%s", origin, destination)
-        return []
+        responses = []
+    else:
+        day_start = datetime(departure_date.year, departure_date.month, departure_date.day, 0, 0, 0)
 
-    day_start = datetime(departure_date.year, departure_date.month, departure_date.day, 0, 0, 0)
-
-    stmt = (
-        select(Flight)
-        .options(
-            selectinload(Flight.airline),
-            selectinload(Flight.origin),
-            selectinload(Flight.destination),
+        stmt = (
+            select(Flight)
+            .options(
+                selectinload(Flight.airline),
+                selectinload(Flight.origin),
+                selectinload(Flight.destination),
+            )
+            .where(Flight.origin_id == origin_airport.id)
+            .where(Flight.destination_id == dest_airport.id)
+            .where(Flight.departure_time >= day_start)
+            .where(Flight.departure_time < day_start + timedelta(days=1))
         )
-        .where(Flight.origin_id == origin_airport.id)
-        .where(Flight.destination_id == dest_airport.id)
-        .where(Flight.departure_time >= day_start)
-        .where(Flight.departure_time < day_start + timedelta(days=1))
-    )
 
-    if max_stops is not None:
-        stmt = stmt.where(Flight.stops <= max_stops)
+        if max_stops is not None:
+            stmt = stmt.where(Flight.stops <= max_stops)
 
-    result = await db.execute(stmt)
-    flights = result.scalars().all()
-    logger.debug("search_flights %s->%s %s: %d results", origin, destination, departure_date, len(flights))
+        result = await db.execute(stmt)
+        flights = result.scalars().all()
+        logger.debug("search_flights %s->%s %s: %d results", origin, destination, departure_date, len(flights))
 
-    responses = [_flight_to_response(f, seat_class) for f in flights]
+        responses = [_flight_to_response(f, seat_class) for f in flights]
+
+    # Fetch external API results
+    from app.services.metasearch import metasearch_flights
+    try:
+        external_results = await metasearch_flights(origin, destination, departure_date)
+    except Exception as e:
+        logger.warning("Metasearch failed: %s", e)
+        external_results = []
+
+    # Merge local and external results
+    all_results = responses + external_results
 
     if max_price is not None:
-        responses = [r for r in responses if r.price <= max_price]
+        all_results = [r for r in all_results if r.price <= max_price]
 
     if airlines:
         airline_upper = [a.upper() for a in airlines]
-        responses = [r for r in responses if r.airline.iata_code in airline_upper]
+        all_results = [r for r in all_results if r.airline.iata_code in airline_upper]
+
+    if max_stops is not None:
+        all_results = [r for r in all_results if r.stops <= max_stops]
 
     if sort_by == "duration":
-        responses.sort(key=lambda r: r.duration_minutes)
+        all_results.sort(key=lambda r: r.duration_minutes)
     elif sort_by == "departure":
-        responses.sort(key=lambda r: r.departure_time)
+        all_results.sort(key=lambda r: r.departure_time)
     elif sort_by == "stops":
-        responses.sort(key=lambda r: r.stops)
+        all_results.sort(key=lambda r: r.stops)
     else:
-        responses.sort(key=lambda r: r.price)
+        all_results.sort(key=lambda r: r.price)
 
-    return responses
+    return all_results

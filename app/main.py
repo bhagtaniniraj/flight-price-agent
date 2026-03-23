@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from app.database import init_db, AsyncSessionLocal
 from app.seed import seed_database
 from app.routes import flights, airports, bookings, alerts, predictions, payments
+from app.services.travelpayouts_client import init_travelpayouts_client
+from app.services.skyscanner_client import init_skyscanner_client
 
 
 @asynccontextmanager
@@ -15,6 +17,8 @@ async def lifespan(app: FastAPI):
     await init_db()
     async with AsyncSessionLocal() as session:
         await seed_database(session)
+    init_travelpayouts_client()
+    init_skyscanner_client()
     yield
 
 

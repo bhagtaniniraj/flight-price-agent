@@ -219,13 +219,13 @@ function renderResults(flights, seatClass) {
   const hasDeals = flights.some(f => f.is_deal);
   if (hasDeals) showBlock($('#deals-badge')); else hide($('#deals-badge'));
 
-  flights.forEach(f => {
-    const card = buildFlightCard(f, seatClass);
+  flights.forEach((f, idx) => {
+    const card = buildFlightCard(f, seatClass, idx === 0);
     list.appendChild(card);
   });
 }
 
-function buildFlightCard(f, seatClass) {
+function buildFlightCard(f, seatClass, isBestPrice) {
   const card = document.createElement('div');
   card.className = `flight-card${f.is_deal ? ' is-deal' : ''}`;
 
@@ -238,6 +238,12 @@ function buildFlightCard(f, seatClass) {
   const bagsText = f.bags_included === 0 ? 'No bags included' : `${f.bags_included} bag${f.bags_included > 1 ? 's' : ''} included`;
   const classLabel = seatClass.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
 
+  const isLive = f.source && f.source !== 'seed';
+  const sourceBadge = isLive
+    ? `<span class="badge-live">🟢 Live Price</span>`
+    : `<span class="badge-sim">📊 Simulated</span>`;
+  const bestBadge = isBestPrice ? `<span class="badge-best-price">🏆 Best Price</span>` : '';
+
   card.innerHTML = `
     <div class="flight-main">
       <div class="flight-header">
@@ -247,6 +253,8 @@ function buildFlightCard(f, seatClass) {
         </span>
         <span class="flight-number">${f.flight_number}</span>
         ${f.is_deal ? '<span class="deal-badge">🔥 DEAL</span>' : ''}
+        ${sourceBadge}
+        ${bestBadge}
       </div>
       <div class="flight-route">
         <div class="route-endpoint">
@@ -279,10 +287,15 @@ function buildFlightCard(f, seatClass) {
         <div class="flight-price">${formatPrice(f.price)}</div>
         <div class="flight-price-label">per person · ${classLabel}</div>
       </div>
-      <button class="btn btn-primary book-btn" data-flight-id="${f.id}">Book Now</button>
+      ${f.booking_link
+        ? `<a href="${f.booking_link}" target="_blank" rel="noopener" class="btn btn-primary book-btn">Book Now →</a>`
+        : `<button class="btn btn-primary book-btn" data-flight-id="${f.id}">Book Now</button>`}
     </div>`;
 
-  card.querySelector('.book-btn').addEventListener('click', () => openBookingModal(f, seatClass));
+  const bookBtn = card.querySelector('.book-btn');
+  if (bookBtn && !f.booking_link) {
+    bookBtn.addEventListener('click', () => openBookingModal(f, seatClass));
+  }
   return card;
 }
 
