@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel, ConfigDict
 
 
@@ -23,6 +23,20 @@ class AirlineResponse(BaseModel):
     country: str
 
 
+class AirlineInfo(BaseModel):
+    """Lightweight airline info for external API results."""
+    iata_code: str
+    name: str
+    color: str = "#666666"
+
+
+class AirportInfo(BaseModel):
+    """Lightweight airport info for external API results."""
+    iata_code: str
+    name: str
+    city: str
+
+
 class FlightSearchRequest(BaseModel):
     origin: str
     destination: str
@@ -36,9 +50,9 @@ class FlightResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     flight_number: str
-    airline: AirlineResponse
-    origin: AirportResponse
-    destination: AirportResponse
+    airline: Union[AirlineResponse, AirlineInfo]
+    origin: Union[AirportResponse, AirportInfo]
+    destination: Union[AirportResponse, AirportInfo]
     departure_time: datetime
     arrival_time: datetime
     duration_minutes: int
@@ -48,6 +62,8 @@ class FlightResponse(BaseModel):
     bags_included: int
     is_deal: bool
     seats_available: int
+    source: str = "seed"
+    booking_link: str = ""
 
 
 class BookingCreate(BaseModel):
